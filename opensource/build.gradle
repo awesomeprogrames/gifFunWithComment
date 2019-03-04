@@ -1,0 +1,70 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+
+android {
+
+    compileSdkVersion COMPILE_SDK_VERSION as int
+
+    defaultConfig {
+        applicationId "com.quxianggif.opensource"
+        minSdkVersion MIN_SDK_VERSION as int
+        targetSdkVersion TARGET_SDK_VERSION as int
+        versionCode VERSION_CODE as int
+        versionName VERSION_NAME
+        // lj:
+        // 用来生成多个dex文件，突破65535方法数限制
+        multiDexEnabled true
+
+        // lj:
+        // 每种Android手机使用不同的CPU，支持不同的指令集，统称为ABI(Application Binary Interface)
+        // 我们可以通过abiFilters来指定我们需要的ABI.
+        //
+        //      armeabi-v7a: 第7代及以上的 ARM 处理器。2011年15月以后的生产的大部分Android设备都使用它.
+        //      arm64-v8a: 第8代、64位ARM处理器，很少设备，三星 Galaxy S6是其中之一。
+        //      armeabi: 第5代、第6代的ARM处理器，早期的手机用的比较多。
+        //      x86: 平板、模拟器用得比较多。
+        //      x86_64: 64位的平板。
+        ndk {
+            abiFilters 'armeabi', 'x86', 'armeabi-v7a', 'x86_64', 'arm64-v8a'
+        }
+    }
+
+    // lj:
+    // buildTypes用来封装此项目的所有构建类型配置；不同的编译模式下会生成不同的变量，可以利用这些变量来方便
+    // 不同编译环境下开发.
+    buildTypes {
+        debug {
+            // buildConfigField(类型，变量名，值)
+            // 指定的变量会生成在BuildConfig里，可以通过BuildConfig.GF_DEBUG获取到指定的变量的值
+            buildConfigField("boolean", "GF_DEBUG", "true")
+        }
+        release {
+            // minifyEnabled 是否可以移除无用的java代码，默认为false
+            // runProguard（是否混淆） 已经遗弃，替换为minifyEnabled
+            minifyEnabled false
+            // proguardFiles 指定混淆使用的混淆文件, android sdk中已经为我们提供了两个默认的配置文件：
+            // proguard-android.txt和proguard-android-optimize.txt  可以直接使用
+            // pro
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            buildConfigField("boolean", "GF_DEBUG", "false")
+        }
+    }
+}
+
+androidExtensions {
+    experimental = true
+}
+
+dependencies {
+
+    // lj:
+    // implementation fileTree用来指定本地二进制依赖，这种依赖是依赖工程中module_name/libs/目录下的jar文件.
+    // 如果只想依赖单独的一个jar,可以这样：implementation files('libs/foo.jar', 'libs/bar.jar')
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+
+    // lj:
+    // implementation project(':localLibrary') 用来设置依赖本地库工程代码，这里的localLibrary必须在settings.gradle中设置好
+    implementation project(':main')
+    testImplementation 'junit:junit:4.12'
+}

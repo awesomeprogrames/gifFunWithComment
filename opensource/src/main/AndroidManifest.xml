@@ -1,0 +1,91 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.quxianggif.opensource">
+
+    <!--networkSecurityConfig网络安全性配置：配置CA证书等等 (CA是产生和确定数字证书的第三方可信机构)-->
+    <!--https://developer.android.google.cn/training/articles/security-config.html-->
+
+    <!--resizeableActivity: 是否支持分屏和自由形状模式-->
+    <!--allowBackup: 是否允许备份应用数据，一旦允许，用户就可以用adb backup和adb restore来对开启USB调试开关的机器进行-->
+    <!--数据备份，并可回复到任意设备上，如果是通讯录应用，攻击者甚至可以看到聊天记录等等，支付类应用则更加危险，因此为了安全-->
+    <!--起见，开发者最好关闭该选项-->
+    <application
+        android:networkSecurityConfig="@xml/network_security_config"
+        android:name="com.quxianggif.GifFunApplication"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:resizeableActivity="false"
+        android:supportsRtl="true"
+        android:theme="@style/GifFun"
+        android:allowBackup="false"
+        tools:targetApi="n"
+        tools:ignore="GoogleAppIndexingWarning">
+
+        <uses-library android:name="org.apache.http.legacy" android:required="false"/>
+
+        <activity
+            android:name=".OpenSourceSplashActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/GifFun.SplashActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+
+        <!--默认情况下，软件盘弹出会遮挡下部分的控件，为了避免这种情况，可以将屏幕整体上移，或者将View整体装入ScrollView中-->
+        <!--windowSoftInputMode: 当软件盘弹起时的效果：adjustResize(View上移)，stateVisible(键盘弹出), stateHidden(键盘隐藏)-->
+        <activity
+            android:name=".OpenSourceLoginActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/GifFun.LoginActivity"
+            android:windowSoftInputMode="adjustResize|stateHidden">
+            <intent-filter>
+                <action android:name="com.quxianggif.opensource.ACTION_LOGIN"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="com.quxianggif.opensource.ACTION_LOGIN_WITH_TRANSITION"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".OpenSourceRegisterActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/GifFun.RegisterActivity"/>
+
+        <activity
+            android:name=".OpenSourceAboutActivity"
+            android:label="@string/title_about"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="com.quxianggif.opensource.ACTION_VIEW_ABOUT"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
+
+        <!--// lj: TODO 应用内升级用-->
+        <provider
+            android:name=".util.GifFunFileProvider"
+            android:authorities="com.quxianggif.opensource.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths"/>
+        </provider>
+
+        <meta-data
+            android:name="APP_CHANNEL"
+            android:value="opensource"/>
+        <meta-data
+            android:name="UMENG_APPKEY"
+            android:value="5c18feb8f1f5568cb70001f9"/>
+        <meta-data
+            android:name="UMENG_CHANNEL"
+            android:value="opensource"/>
+
+    </application>
+</manifest>
